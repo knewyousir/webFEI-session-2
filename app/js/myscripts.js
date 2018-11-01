@@ -6,7 +6,7 @@ nav.innerHTML = '';
 
 const markup = `
 <ul>
-  ${navItems.map( navItem => `<li><a href="${navItem.link}">${navItem.label}</a></li>` ).join('')}
+${navItems.map( navItem => `<li><a href="${navItem.link}">${navItem.label}</a></li>` ).join('')}
 </ul>
 `;
 
@@ -32,42 +32,61 @@ logo.classList.add('logo');
 logo.innerHTML = '<a href="#"><img src="img/logo.svg" /></a>';
 
 var elem = document.querySelector('.site-wrap');
-const nytapi = 'd7d88f32a04d4c6aab4e46735441d0ee';
+const nytapi = '6310a97dde7143a9b8b4fed9aa6b0f81';
 const limit = 3;
+var categories = ['food', 'fashion', 'travel'];
+var log = console.log;
 
-function requestStories(url) {
+
+function requestStories(section) {
+  var url = 'https://api.nytimes.com/svc/topstories/v2/' + section + '.json?api-key=' + nytapi;
+  // log(section);
   var request = new XMLHttpRequest();
+  // Setup our listener to process request state changes
   request.onreadystatechange = function () {
     // Only run if the request is complete
     if (request.readyState !== 4) return;
-    
-    // Process our return data
-    if (request.status === 200) {
-      // Success!
-      renderStories(request); // NEW
-    } else {
-      // Request failed
-      console.log('boo hoo')
+    // Process the response
+    if (request.status >= 200 && request.status < 300) {
+      // If successful
+      renderStories(request, section); // NEW
     }
   };
-  request.open('GET', 'https://api.nytimes.com/svc/topstories/v2/travel.json?api-key=' + nytapi)
+  request.open('GET', url, true);
   request.send();
 }
 
-function renderStories(data) {
-  var content = (JSON.parse(data.responseText));
-  var stories = content.results.slice(0, limit);
-  //NEW
-  const htmlFrag = stories.map(story => `
-  <div class="entry">
-  <img src="${story.multimedia[0].url}" /> 
-  <div>
-  <h3><a target="_blank" href="${story.short_url}">${story.title}</a></h3>
-  <p>${story.abstract}</p>
-  </div>
-</div>
-`).join('')
-  elem.innerHTML = htmlFrag;
+function renderStories(stories, title) {
+  var sectionHead = document.createElement('div');
+  sectionHead.id = title;
+  sectionHead.innerHTML = `<h3 class="section-head">${title}</h3>`;
+  elem.prepend(sectionHead)
+
+  stories = JSON.parse(stories.responseText).results.slice(0, limit);
+  stories.forEach(function (story) {
+    var storyEl = document.createElement('div');
+    storyEl.className = 'entry';
+    storyEl.innerHTML = `
+    <img src="${story.multimedia[0].url}" />
+    <div>
+    <h3><a target="_blank" href="${story.short_url}">${story.title}</a></h3>
+    <p>${story.abstract}</p>
+    </div>
+    `;
+    sectionHead.append(storyEl); 
+  });
 }
 
-requestStories();
+function getArticles(){
+  categories.forEach(function(category, index) {
+    requestStories(category);
+  });
+};
+
+var sanitizeHTML = function (str) {
+	var temp = document.createElement('div');
+	temp.textContent = str;
+	return temp.innerHTML;
+};
+
+getArticles();

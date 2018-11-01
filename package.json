@@ -1,0 +1,24 @@
+{
+  "name": "session-2",
+  "version": "1.0.0",
+  "description": "## Homework",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "browser-sync start -b 'google chrome'  --server 'app' --files 'app'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/front-end-intermediate/session-2.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/front-end-intermediate/session-2/issues"
+  },
+  "homepage": "https://github.com/front-end-intermediate/session-2#readme",
+  "devDependencies": {
+    "browser-sync": "^2.26.3"
+  }
+}
